@@ -1,80 +1,147 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skillup/Constrain/url.dart';
-import 'package:skillup/Utils/mensage.dart';
+import 'package:http/http.dart' as http;
+import 'package:skillup/Model/funcionario.dart';
 
-class CadastroProvider with ChangeNotifier {
-  bool _isChecked = false;
-  bool _isLoading = false;
+class FuncionarioProvider with ChangeNotifier{
+  
+  bool _cadastrado = false;
+  bool get cadastrado => _cadastrado;
 
-  bool get isChecked => _isChecked;
-  bool get isLoading => _isLoading;
+  bool _carregando = false;
+  bool get carregando => _carregando;
 
-  final maskFormatter = MaskTextInputFormatter(
-    mask: '(##) #####-####',
-    filter: { "#": RegExp(r'[0-9]') },
-  );
+  String _menssagem = "";
+  String get menssagem => _menssagem;
 
-  void toggleChecked() {
-    _isChecked = !_isChecked;
-    notifyListeners();
+  List<Funcionario> _funcionarios = [];
+
+  List<Funcionario> get funcionarios => _funcionarios;
+
+  String? token;
+
+//pegar token
+  Future<void> pegarToken() async {
+    var dados = await SharedPreferences.getInstance();
+    token = dados.getString("token");
   }
 
-  Future<void> cadastrar(
-    BuildContext context,
-    String nome,
-    String cpf,
-    String email,
-    String senha,
-    String telefone,
-  ) async {
-    var dados = await SharedPreferences.getInstance();
-    String? token = dados.getString("token");
+
+//cadastrar
+Future<void> cadastrarFuncionario(Funcionario funcionario) async {
+     final url = '${AppUrl.baseUrl}api/Usuario/Criar';
     
-    String url = '${AppUrl.baseUrl}api/Usuario';
+    try {
+      await pegarToken();
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+        body: json.encode(funcionario.toJson()),
+      );
 
-    _isLoading = true;
-    notifyListeners();
-
-    cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
-
-    int cpfParse = int.parse(cpf);
-
-    Map<String, dynamic> requestBody = {
-      "nome": nome,
-      "cpf": cpfParse,
-      "email": email,
-      "senha": senha,
-      "telefone": telefone
-    };
-
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(requestBody),
-    );
-
-    _isLoading = false;
-    notifyListeners();
-
-     if (response.statusCode == 200 || response.statusCode == 201) {
-      debugPrint("certo");
-      showMessage(
-          message: 'Colaborador cadastrado com sucesso!',
-          // ignore: use_build_context_synchronously
-          context: context);
-    } else {
-      debugPrint(response.body);
-      showMessage(
-          message: 'Erro ao cadastrar colaborador!',
-          // ignore: use_build_context_synchronously
-          context: context);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+         _cadastrado = true;
+         _carregando = false;
+         _menssagem = "Funcionario Cadastrado com sucesso!";
+        notifyListeners();
+      } else {
+          _cadastrado = false;
+         _carregando = false;
+         _menssagem = "Erro ao cadastrar funcionario!";
+         notifyListeners();
+      }
+    } catch (error) {
+        _cadastrado = false;
+         _carregando = false;
+         _menssagem = "Dados Incorretos ou erro de servidor$error";
+         notifyListeners();
     }
   }
+
+
+//listar
+  Future<void> listarFuncionarios() async {
+      final url = '${AppUrl.baseUrl}api/Usuario';
+    try {
+      await pegarToken();
+      final response = await http.get(Uri.parse(url),
+       headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },);
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        _funcionarios = data.map((json) => Funcionario.fromJson(json)).toList();
+        _carregando = false;
+        notifyListeners();
+      } else {
+        _carregando = false;
+         notifyListeners();
+      }
+    } catch (error) {
+        _cadastrado = false;
+         _carregando = false;
+         _menssagem = "Erro ao carregar dos do servidor";
+         notifyListeners();
+    }
+  }
+
+
+    // Método para atualizar 
+  Future<void> atualizarFuncionario(Funcionario funcionario)async {
+    try {
+      final response = await http.put(
+        Uri.parse('${AppUrl.baseUrl}api/Funcionario${funcionario.id}'),
+         headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+
+        body: jsonEncode(funcionario.toJson()),
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        _menssagem = 'Funcionario atualizado com sucesso!';
+        listarFuncionarios();
+        notifyListeners();
+      } else {
+        _menssagem = 'Erro ao atualizar funcionario!';
+        notifyListeners();
+      }
+    } catch (error) {
+      _menssagem = 'Ocorreu algum erro no servidor!';
+      notifyListeners();
+    }
+  }
+
+  // Função para deletar 
+  Future<void> deletarFuncionario(int id) async {
+    final url = Uri.parse('${AppUrl.baseUrl}api/Funcionarios/$id');
+
+    try {
+      final response = await http.delete(url, headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+         _menssagem = 'Funcionario Deletado com com Sucesso';
+       listarFuncionarios(); 
+        notifyListeners();
+      } else {
+         _menssagem = 'Erro ao deletar Funcionario';
+        notifyListeners();
+      }
+    } catch (error) {
+      _menssagem = 'Erro de conexão como servidor!';
+      notifyListeners();
+    }
+  }
+
 }

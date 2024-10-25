@@ -24,8 +24,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => Logar()),
         ChangeNotifierProvider(create: (_) => CadCursoProvider()),
         ChangeNotifierProvider(create: (_) => FuncionarioCursoProvider()),
-        ChangeNotifierProvider(create: (_) => CadastroProvider()),
-        ChangeNotifierProvider(create: (_) =>  CursoProvider())
+        ChangeNotifierProvider(create: (_) => CursoProvider()),
+        ChangeNotifierProvider(create: (_) => FuncionarioProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
