@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:skillup/Provider/Login/logar.dart';
 import 'package:skillup/Provider/admin/cadcurso.dart';
 import 'package:skillup/Provider/admin/funccurso.dart';
 import 'package:skillup/Provider/admin/funcionario.dart';
-import 'package:skillup/Provider/cadastro/create_user.dart';
-import 'package:skillup/Provider/cadastro/verifica_usuario.dart';
+import 'package:skillup/Provider/curso/cursoprovider.dart';
+import 'package:skillup/Provider/login/logar.dart';
+import 'package:skillup/Provider/usuario/create_user.dart';
+import 'package:skillup/Provider/usuario/verifica_usuario.dart';
 import 'package:skillup/pages/cadastro.dart';
 import 'package:skillup/pages/criaTreina.dart';
 import 'package:skillup/pages/curso.dart';
@@ -24,6 +25,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => CadCursoProvider()),
         ChangeNotifierProvider(create: (_) => FuncionarioCursoProvider()),
         ChangeNotifierProvider(create: (_) => CadastroProvider()),
+        ChangeNotifierProvider(create: (_) =>  CursoProvider())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -33,7 +35,7 @@ void main() {
           "/EditAdm": (context) => const EditAdm(),
           "/Cadastro": (context) => const Cadastro(),
           "/MainColab": (context) => const MainColab(),
-          "/Curso": (context) => const Curso(),
+          "/Curso": (context) => const Treinamento(),
           "/Treinamento": (context) => const TreinamentoPage(),
           "/CriaTreinamento": (context) => const CriaTreinamento(),
           "/ListaColab": (context) => ListaColab(),

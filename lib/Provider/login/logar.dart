@@ -5,7 +5,7 @@ import 'package:skillup/Constrain/url.dart';
 import 'package:skillup/Data/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Logar extends ChangeNotifier {
+class Logar with ChangeNotifier {
   bool _valido = false;
   bool _logado = false;
   String _msgError = '';
@@ -37,7 +37,7 @@ class Logar extends ChangeNotifier {
   }
 
 //Logar usuário
-  Future logarUsuario(String email, String password, int cpf) async {
+  Future logarUsuario(String cpf, String password) async {
     
     _carregando = true;
     notifyListeners();
@@ -45,7 +45,6 @@ class Logar extends ChangeNotifier {
     String url = '${AppUrl.baseUrl}curso/Usuario/Login';
 
     Map<String, dynamic> requestBody = {
-      'email': email,
       'password': password,
       'cpf': cpf,
     };
@@ -71,7 +70,7 @@ class Logar extends ChangeNotifier {
       await ds.gravarNivel(dados['roles'][0]);
 
       if (dados['roles'][0] == "Basic") {
-        _rota = "/dashboard";
+        _rota = "/maincolab";
       } else {
         _rota = "/admin";
       }

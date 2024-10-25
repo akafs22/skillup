@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Curso extends StatefulWidget {
-  const Curso({super.key});
+class Treinamento extends StatefulWidget {
+  const Treinamento({super.key});
 
   @override
-  State<Curso> createState() => _CursoState();
+  State<Treinamento> createState() => _TreinamentoState();
 }
 
-class _CursoState extends State<Curso> with SingleTickerProviderStateMixin {
+class _TreinamentoState extends State<Treinamento> with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TabController _tabController;
 
@@ -174,4 +174,3 @@ class _CursoState extends State<Curso> with SingleTickerProviderStateMixin {
         ),
       );
 }
-
