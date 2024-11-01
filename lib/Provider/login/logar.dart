@@ -11,12 +11,14 @@ class Logar with ChangeNotifier {
   String _msgError = '';
   bool _carregando = false;
   String _rota = "";
+  Map<String,dynamic> _dadosUser = {};
 
   bool get ehvalido => _valido;
   bool get logado => _logado;
   String get msgError => _msgError;
   bool get carregando => _carregando;
   String get rota => _rota;
+  Map<String,dynamic> get dadosUer => _dadosUser;
 
   void validatePassword(String password) {
     _msgError = '';
@@ -42,7 +44,7 @@ class Logar with ChangeNotifier {
     _carregando = true;
     notifyListeners();
 
-    String url = '${AppUrl.baseUrl}curso/Usuario/Login';
+    String url = '${AppUrl.baseUrl}api/Usuario/Login';
 
     Map<String, dynamic> requestBody = {
       'password': password,
@@ -57,22 +59,27 @@ class Logar with ChangeNotifier {
       body: jsonEncode(requestBody),
     );
 
+   
     _carregando = false;
+
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       Map dados = jsonDecode(response.body);
 
+    
       // gravar id
       SharedPreferences idUser = await SharedPreferences.getInstance();
       var ds = GetId(idUser);
-      await ds.gravarId(dados['funcId']);
+      await ds.gravarId(dados['id']);
       await ds.gravarToken(dados['token']);
       await ds.gravarNivel(dados['roles'][0]);
+      await dadosUsuario(dados['id']);
 
+ 
       if (dados['roles'][0] == "Basic") {
-        _rota = "/maincolab";
+        _rota = "/MainColaborador";
       } else {
-        _rota = "/admin";
+        _rota = "/MainAdmin";
       }
       _logado = true;
       notifyListeners();
@@ -80,5 +87,40 @@ class Logar with ChangeNotifier {
       _logado = false;
       notifyListeners();
     }
+  }
+
+  Future dadosUsuario(String id) async {
+
+     _carregando = true;
+    notifyListeners();
+
+    try {
+      
+      String url = '${AppUrl.baseUrl}api/Usuario/$id';
+
+      print(url);
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    
+      if (response.statusCode == 200 || response.statusCode == 405) {
+        _dadosUser = jsonDecode(response.body);
+        _carregando = false;
+        notifyListeners();
+      
+      } else {
+        print("erro carregar dados funcionário");
+        _carregando = false;
+         notifyListeners();
+      }
+
+    } catch (e){
+       _carregando = false;
+      _msgError = 'Erro de conexão.';
+      notifyListeners();
+    }
+
+  
+
   }
 }

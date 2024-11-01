@@ -15,7 +15,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     super.initState();
@@ -46,90 +45,74 @@ class _TreinamentoPageState extends State<TreinamentoPage> {
 
   @override
   Widget build(BuildContext context) {
-
-  
     return Scaffold(
       key: _scaffoldKey,
-      body: Consumer<CursoProvider>(
+      body: Consumer<CursoProvider>(builder: (context, provider, child) {
+        if (provider.cursos.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-        builder: (context, provider, child) {
-          
-          if (provider.cursos.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return  ListView.builder(
-              itemCount: provider.cursos.length,
-              itemBuilder: (context, index) {
-                final curso = provider.cursos[index];
-                return ListTile(
-            
+        return ListView.builder(
+            itemCount: provider.cursos.length,
+            itemBuilder: (context, index) {
+              final curso = provider.cursos[index];
+              return ListTile(
                   title: Text(curso.nome),
                   subtitle: Text(curso.descricao),
-                  trailing:  Row(
+                  trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(onPressed: (){
-                        // Navigator.push(
-                        //               context,
-                        //               MaterialPageRoute(
-                        //                 builder: (context) => CadastrarSalas(
-                        //                     ambiente: ambiente),
-                        //               ),
-                        //             );
+                      IconButton(
+                          onPressed: () {
+                            // Navigator.push(
+                            //               context,
+                            //               MaterialPageRoute(
+                            //                 builder: (context) => CadastrarSalas(
+                            //                     ambiente: ambiente),
+                            //               ),
+                            //             );
+                          },
+                          icon: const Icon(Icons.edit)),
+                      IconButton(
+                          onPressed: () async {
+                            // Exibe a confirmação antes de excluir
+                            bool? confirm = await showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Confirmar Exclusão'),
+                                content: Text(
+                                    'Tem certeza de que deseja excluir a sala: ${curso.nome}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text('Cancelar'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: const Text('Confirmar'),
+                                  ),
+                                ],
+                              ),
+                            );
 
-                      }, icon: const Icon(Icons.edit)),
-                      IconButton(onPressed: () async{
-
-                           // Exibe a confirmação antes de excluir
-                                    bool? confirm = await showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('Confirmar Exclusão'),
-                                        content: Text(
-                                            'Tem certeza de que deseja excluir a sala: ${curso.nome}?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context)
-                                                    .pop(false),
-                                            child: const Text('Cancelar'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(true),
-                                            child: const Text('Confirmar'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-
-                               
-                                    if (confirm == true) {
-                                      await  provider.deletarCurso(
-                                              curso.id);
-                                     showMessage(message: provider.menssagem, context: context);
-                            
-                                    }
-
-                                    
-              
-
-                      }, icon: const Icon(Icons.delete)),
+                            if (confirm == true) {
+                              await provider.deletarCurso(curso.id);
+                              showMessage(
+                                  message: provider.menssagem,
+                                  context: context);
+                            }
+                          },
+                          icon: const Icon(Icons.delete)),
                     ],
-                  )
-                );});
-
-        }),
-        
-        
-        );
-
-
+                  ));
+            });
+      }),
+    );
   }
 
-
-   Widget _buildUserAccountInfo() {
+  Widget _buildUserAccountInfo() {
     return const Row(
       children: [
         CircleAvatar(

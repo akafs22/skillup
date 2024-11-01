@@ -90,8 +90,8 @@ class _LoginState extends State<Login> {
                         Icons.arrow_circle_right_outlined,
                         color: Colors.blueAccent,
                       ),
-                      onPressed: (){
-                         provider.logarUsuario(_cpfcontroller.text, _senhacontroller.text);
+                      onPressed: () async{
+                         await provider.logarUsuario(_cpfcontroller.text, _senhacontroller.text);
                         if (provider.logado == true) {
                           Navigator.of(context).pushNamed(provider.rota);
                       }

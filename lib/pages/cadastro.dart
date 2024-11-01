@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:skillup/Provider/usuario/create_user.dart';
+import 'package:skillup/Utils/mensage.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({super.key});
@@ -21,54 +24,18 @@ class _CadastroState extends State<Cadastro> {
 
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _cpfController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
-  final TextEditingController _confirmarSenhaController =
-      TextEditingController();
+    final TextEditingController _emailController = TextEditingController();
   final TextEditingController _telefoneController = TextEditingController();
-  final TextEditingController _afiliacaoController = TextEditingController();
+  final TextEditingController _tipoController = TextEditingController();
 
-
-  Future<void> _registrarUsuario() async {
-    final url = Uri.parse(
-        'https://skup.azurewebsites.net/api/usuario/cadastrar');
-
-    final body = {
-      "nome": _nomeController.text,
-      "cpf": _cpfController.text,
-      "email": _emailController.text,
-      "senha": _senhaController.text,
-      "confirmarSenha": _confirmarSenhaController.text,
-      "telefone": _telefoneController.text,
-      "afiliacao": _afiliacaoController.text,
-    };
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
-
-      if (response.statusCode == 201) {
-        Navigator.of(context).pushNamed("/");
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao cadastrar')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro de conexão')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
+      body: Expanded(
+        child: Consumer<ValidarSenha>(builder: (context, provider, _) {
+          return Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topRight,
@@ -100,15 +67,9 @@ class _CadastroState extends State<Cadastro> {
                   'Email*', _emailController, TextInputType.emailAddress),
               _buildTextField('Senha*', _senhaController, TextInputType.text,
                   obscureText: true),
-              _buildTextField('Confirmar senha*', _confirmarSenhaController,
-                  TextInputType.text,
-                  obscureText: true),
               _buildTextField('Número de telefone*', _telefoneController,
                   TextInputType.phone,
                   inputFormatters: [maskFormatter]),
-              _buildTextField('Selecione sua afiliação*', _afiliacaoController,
-                  TextInputType.text),
-              const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -133,10 +94,17 @@ class _CadastroState extends State<Cadastro> {
                 ],
               ),
               const SizedBox(height: 30),
+              provider.carregando ? const CircularProgressIndicator() :
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_isChecked) {
-                    _registrarUsuario();
+                    await provider.createUser(_nomeController.text, _cpfController.text, _senhaController.text, _emailController.text, _telefoneController.text, _tipoController.text);
+                    if (provider.valido) {
+                      showMessage(message: provider.msgErrorApi, context: context);
+                      Navigator.of(context).pushNamed('/');
+                    } else {
+                    showMessage(message: provider.msgErrorApi, context: context);
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -166,7 +134,8 @@ class _CadastroState extends State<Cadastro> {
               const SizedBox(height: 20),
             ],
           ),
-        ),
+        );
+        },)
       ),
     );
   }

@@ -11,7 +11,8 @@ import 'package:skillup/pages/criaTreina.dart';
 import 'package:skillup/pages/curso.dart';
 import 'package:skillup/pages/listaColab.dart';
 import 'package:skillup/pages/login.dart';
-import 'package:skillup/pages/mainColab.dart';
+import 'package:skillup/pages/mainAdmin.dart';
+import 'package:skillup/pages/mainColababorador.dart';
 import 'package:skillup/pages/perf_adm.dart';
 import 'package:skillup/pages/treinamentos.dart';
 import 'package:provider/provider.dart';
@@ -34,11 +35,12 @@ void main() {
           "/": (context) => const Login(),
           "/EditAdm": (context) => const EditAdm(),
           "/Cadastro": (context) => const Cadastro(),
-          "/MainColab": (context) => const MainColab(),
+          "/MainAdmin": (context) => const MainAdmin(),
           "/Curso": (context) => const Treinamento(),
           "/Treinamento": (context) => const TreinamentoPage(),
           "/CriaTreinamento": (context) => const CriaTreinamento(),
           "/ListaColab": (context) => ListaColab(),
+          "/MainColaborador": (context) => const MainColaborador(),
         },
       )));
 }

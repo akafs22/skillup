@@ -9,7 +9,7 @@ class ValidarSenha extends ChangeNotifier {
   String _msgErrorApi = '';
   bool _carregando = false;
 
-  bool get ehvalido => _valido;
+  bool get valido => _valido;
   String get msgError => _msgError;
   String get msgErrorApi => _msgErrorApi;
   bool get carregando => _carregando;
@@ -34,16 +34,20 @@ class ValidarSenha extends ChangeNotifier {
   }
 
 //Criar usuário
-  Future createUser(String email, int cpf, String password,) async {
+  Future createUser(String nome, String cpf, String password, String email, String telefone, String tipo) async {
     String url = '${AppUrl.baseUrl}api/Usuario/Criar';
 
     Map<String, dynamic> requestBody = {
-      'email': email,
-      'cpf': cpf,
-      'password': password,
+      'nome' : nome,
+      "cpf": cpf,
+      "password": password,
+      "email": email,
+      "telefone": telefone,
+      "tipo": tipo
     };
 
-    _carregando = false;
+    _carregando = true;
+    notifyListeners();
 
     http.Response response = await http.post(
       Uri.parse(url),
@@ -52,12 +56,14 @@ class ValidarSenha extends ChangeNotifier {
       },
       body: jsonEncode(requestBody),
     );
-
-    if (response.statusCode == 200) {
-      _carregando = true;
+   print("requição ok");
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      _valido = true;
+      _carregando = false;
       _msgErrorApi = "Usuário Cadastrado com sucesso";
       notifyListeners();
     } else {
+      _carregando = false;
       _msgErrorApi = response.body;
       notifyListeners();
     }

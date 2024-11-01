@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skillup/Provider/login/logar.dart';
 import 'package:skillup/Utils/drawer.dart';
 
-class MainColab extends StatefulWidget {
-  const MainColab({super.key});
+class MainAdmin extends StatefulWidget {
+  const MainAdmin({super.key});
 
   @override
-  State<MainColab> createState() => _MainColabState();
+  State<MainAdmin> createState() => _MainAdminState();
 }
 
-class _MainColabState extends State<MainColab>
+class _MainAdminState extends State<MainAdmin>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TabController _tabController;
@@ -45,7 +48,9 @@ class _MainColabState extends State<MainColab>
     final width = MediaQuery.of(context).size.width;
     final bool isLargeScreen = width > 800;
 
-    return Scaffold(
+    return Consumer<Logar>(builder: (context, provider, child) {
+
+      return Scaffold(
       key: _scaffoldKey,
       body: Column(
         children: [
@@ -125,33 +130,40 @@ class _MainColabState extends State<MainColab>
           ),
         ],
       ),
-      drawer: isLargeScreen ? null : meudrawer(context),
+      drawer: meudrawer(context, provider.dadosUer["nome"], provider.dadosUer["email"]),
+    );
+      
+    },  
     );
   }
 
   Widget _buildUserAccountInfo() {
-    return const Row(
+    return Consumer<Logar>(
+      builder: (context, provider, _) {
+        return Row(
       children: [
-        CircleAvatar(
+        const CircleAvatar(
           backgroundColor: Colors.white,
           child: Icon(Icons.person, color: Color.fromRGBO(50, 64, 82, 1)),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Julia",
+             provider.dadosUer["nome"] ?? "nome não carregado!",
               style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             Text(
-              "Administrador",
+               provider.dadosUer["email"] ?? "nome não carregado!",
               style: TextStyle(color: Colors.white70),
             ),
           ],
         ),
       ],
+    );
+      },
     );
   }
 

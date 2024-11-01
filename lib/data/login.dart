@@ -9,12 +9,12 @@ class GetId {
 
   GetId(this.usuario);
 
-  Future<void> gravarId(int value) async {
-    await usuario.setInt(idUser, value);
+  Future<void> gravarId(String value) async {
+    await usuario.setString(idUser, value);
   }
 
-  int pegarId() {
-    return usuario.getInt(idUser) ?? 0;
+  String pegarId() {
+    return usuario.getString(idUser) ?? "0";
   }
 
   Future<void> gravarToken(String value) async {
