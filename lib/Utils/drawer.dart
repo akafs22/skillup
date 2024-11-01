@@ -46,3 +46,26 @@ Widget? meudrawer(BuildContext contexto, String nome, String email) {
         ),
       );
 }
+
+Widget? colabdrawer(BuildContext contexto, String nome, String email) {
+    return Drawer(
+        backgroundColor: const Color.fromRGBO(50, 64, 82, 1),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            UserAccountsDrawerHeader(
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, color: Color.fromRGBO(50, 64, 82, 1)),
+              ),
+              decoration: const BoxDecoration(
+                color: Color.fromRGBO(50, 64, 82, 1),
+              ),
+              accountName: Text( nome ?? "Não carregado", style: const TextStyle(color: Colors.white)),
+              accountEmail:
+                  Text(email ?? "Não carregado", style: TextStyle(color: Colors.white70)),
+            ),
+          ]
+        ),
+      );
+}
