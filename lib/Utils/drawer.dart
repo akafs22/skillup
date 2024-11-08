@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:skillup/Provider/login/logar.dart';
 
 Widget? meudrawer(BuildContext contexto, String nome, String email) {
     return Drawer(
@@ -32,6 +30,13 @@ Widget? meudrawer(BuildContext contexto, String nome, String email) {
                   style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.of(contexto).pushNamed("/CursoPage");
+              },
+            ),
+             ListTile(
+              title: const Text('Cadastro de orgão emissor',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.of(contexto).pushNamed("/OrgaoEmissor");
               },
             ),
             const SizedBox(height: 450),

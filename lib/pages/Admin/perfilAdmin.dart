@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
-
-class PerfilAdmin extends StatelessWidget {
+class PerfilAdmin extends StatefulWidget {
   const PerfilAdmin({super.key});
 
+  @override
+  State<PerfilAdmin> createState() => _PerfilAdminState();
+}
+
+class _PerfilAdminState extends State<PerfilAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +53,8 @@ class PerfilAdmin extends StatelessWidget {
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
                   ),
                   child: const Text("SALVAR"),
                 ),
@@ -57,7 +62,8 @@ class PerfilAdmin extends StatelessWidget {
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
                   ),
                   child: const Text("EXCLUIR"),
                 ),

@@ -17,9 +17,9 @@ class OrgaoEmissorProvider with ChangeNotifier{
   String _menssagem = "";
   String get menssagem => _menssagem;
 
-  List<OrgaoEmissor> _OrgaoEmissors = [];
+  List<OrgaoEmissor> _orgaoEmissors = [];
 
-  List<OrgaoEmissor> get OrgaoEmissors => _OrgaoEmissors;
+  List<OrgaoEmissor> get orgaoEmissores => _orgaoEmissors;
 
   String? token;
 
@@ -67,7 +67,7 @@ Future<void> cadastrarOrgaoEmissor(OrgaoEmissor orgaoEmissor) async {
 
 //listar
   Future<void> listarOrgaoEmissors() async {
-      final url = '${AppUrl.baseUrl}api/OrgaoEmissors';
+      final url = '${AppUrl.baseUrl}api/OrgaoEmissor';
     try {
       await pegarToken();
       final response = await http.get(Uri.parse(url),
@@ -78,7 +78,7 @@ Future<void> cadastrarOrgaoEmissor(OrgaoEmissor orgaoEmissor) async {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        _OrgaoEmissors = data.map((json) => OrgaoEmissor.fromJson(json)).toList();
+        _orgaoEmissors = data.map((json) => OrgaoEmissor.fromJson(json)).toList();
         _carregando = false;
         notifyListeners();
       } else {
@@ -98,7 +98,7 @@ Future<void> cadastrarOrgaoEmissor(OrgaoEmissor orgaoEmissor) async {
   Future<void> atualizarOrgaoEmissor(OrgaoEmissor orgaoEmissor)async {
     try {
       final response = await http.put(
-        Uri.parse('${AppUrl.baseUrl}api/OrgaoEmissors${orgaoEmissor.id}'),
+        Uri.parse('${AppUrl.baseUrl}api/OrgaoEmissor/${orgaoEmissor.orgaoEmissorId}'),
          headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -123,7 +123,7 @@ Future<void> cadastrarOrgaoEmissor(OrgaoEmissor orgaoEmissor) async {
 
   // Função para deletar 
   Future<void> deletarOrgaoEmissor(int id) async {
-    final url = Uri.parse('${AppUrl.baseUrl}api/OrgaoEmissors/$id');
+    final url = Uri.parse('${AppUrl.baseUrl}api/OrgaoEmissor/$id');
 
     try {
       final response = await http.delete(url, headers: {

@@ -1,19 +1,19 @@
 class OrgaoEmissor {
-  final int id;
+  final int? orgaoEmissorId;
   final String nome;
 
-OrgaoEmissor({required this.id, required this.nome});
+OrgaoEmissor({this.orgaoEmissorId, required this.nome});
 
 Map<String, dynamic> toJson() {
     return {
-      'orgaoEmissorId': id ?? 0,
+      'orgaoEmissorId': orgaoEmissorId ?? 0,
       'nome': nome,
     };
   }
 
   factory OrgaoEmissor.fromJson(Map<String, dynamic> json) {
     return OrgaoEmissor(
-      id: json['orgaoEmissorId'],
+      orgaoEmissorId: json['orgaoEmissorId'],
       nome: json['nome'],
     );
   }

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:skillup/Provider/curso/cursoprovider.dart';
 import 'package:provider/provider.dart';
+import 'package:skillup/Model/curso.dart';
+import 'package:skillup/Provider/curso/cursoprovider.dart';
+import 'package:skillup/Provider/curso/orgaoEmissorProvider.dart';
+import 'package:skillup/Utils/mensage.dart';
+
 
 class CriaCursoPage extends StatefulWidget {
-  const CriaCursoPage({super.key});
+  final Curso? curso;
+  const CriaCursoPage({super.key, this.curso});
 
   @override
   _CriaCursoPageState createState() => _CriaCursoPageState();
@@ -12,38 +17,22 @@ class CriaCursoPage extends StatefulWidget {
 class _CriaCursoPageState extends State<CriaCursoPage> {
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
-  final TextEditingController _orgaoEmissorController = TextEditingController();
-  final List<Map<String, String>> _matriculados = [];
-  bool _isEditable = false;
+  int? _cursoSelecionado;
 
-  void _onFazerAlteracoes() {
-    setState(() {
-      _isEditable = true;
-    });
+
+
+@override
+  void initState() {
+     if (widget.curso != null){
+      _nomeController.text = widget.curso!.nome;
+      _descricaoController.text = widget.curso!.descricao;
+    }
+
+    Provider.of<OrgaoEmissorProvider>(context, listen: false).listarOrgaoEmissors();
+
+    super.initState();
   }
-
-  void _onSalvar() {
-    setState(() {
-      _isEditable = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Treinamento salvo com sucesso!')),
-    );
-  }
-
-  void _onExcluir() {
-    setState(() {
-      _nomeController.clear();
-      _matriculados.clear();
-      _descricaoController.clear();
-      _orgaoEmissorController.clear();
-      _isEditable = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Dados excluídos!')),
-    );
-  }
-
+ 
   
   @override
   Widget build(BuildContext context) {
@@ -72,7 +61,6 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
               const SizedBox(height: 5),
               TextField(
                 controller: _nomeController,
-                enabled: _isEditable,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Digite o nome do treinamento',
@@ -87,49 +75,81 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
               const SizedBox(height: 5),
               TextField(
                 controller: _descricaoController,
-                enabled: _isEditable,
                 maxLines: 5,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Descrição',
                 ),
               ),
+
               const SizedBox(height: 20),
-        
-              ElevatedButton(
-                onPressed: _onFazerAlteracoes,
+
+            Consumer<OrgaoEmissorProvider>(
+            builder: (context, provider, child) {
+              if (provider.orgaoEmissores.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              return
+
+               DropdownButton<int>(
+                    isExpanded: true,
+                    value: _cursoSelecionado,
+                    hint: const Text("Selecione um Curso"),
+                    items: provider.orgaoEmissores.map((orgao) {
+                      return DropdownMenuItem<int>(
+                        value: orgao.orgaoEmissorId,
+                        child: Text(orgao.nome),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _cursoSelecionado = value;
+                      });
+                    },
+                  );
+            }),
+              const SizedBox(height: 20),
+
+              Consumer<CursoProvider>(builder:(context, provider, _) {
+
+                return ElevatedButton(
+                onPressed: ()  async {
+
+                        final cursocad = Curso(
+                                cursoId: widget.curso!.cursoId ?? 0,
+                                nome: _nomeController.text,
+                                descricao: _descricaoController.text,
+                                orgaoEmissorId: _cursoSelecionado as int,
+                              );
+
+                           
+
+                              if (widget.curso == null) {
+                                await provider.cadastrarCurso(cursocad);
+                              } else {
+                                await provider.atualizarCurso(cursocad);
+                              }
+
+                              showMessage(
+                                  message: provider.menssagem,
+                                  // ignore: use_build_context_synchronously
+                                  context: context);
+     
+
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-                child: const Text("FAZER ALTERAÇÕES"),
-              ),
+                child: const Text("SALVAR"),
+              );
+                
+              },),
+        
+              
               const SizedBox(height: 20),
         
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isEditable ? _onSalvar : null,
-                      style: ElevatedButton.styleFrom(
-        
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                      ),
-                      child: const Text("SALVAR"),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isEditable ? _onExcluir : null,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                      ),
-                      child: const Text("EXCLUIR"),
-                    ),
-                  ),
-                ],
-              ),
+              
             ],
           ),
         ),

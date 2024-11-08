@@ -10,7 +10,7 @@ class _ListaColabState extends State<ListaColab> {
     Colaborador(
       nome: "ANNA KLARA DE ALMEIDA F. SILVA",
       cpf: "0198",
-      icone: Icons.pan_tool, // Ícone de mão
+      icone: Icons.pan_tool,
       corIcone: Colors.black,
     ),
     Colaborador(
@@ -22,7 +22,7 @@ class _ListaColabState extends State<ListaColab> {
     Colaborador(
       nome: "JÚLIA RODRIGUES",
       cpf: "0168",
-      icone: Icons.pets, // Ícone de gato
+      icone: Icons.pets,
       corIcone: Colors.purple,
     ),
   ];

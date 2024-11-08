@@ -1,51 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:skillup/Provider/curso/cursoprovider.dart';
+import 'package:skillup/Provider/curso/orgaoEmissorProvider.dart';
 import 'package:skillup/Utils/mensage.dart';
-import 'package:skillup/pages/Admin/criaCurso.dart';
+import 'package:skillup/pages/Admin/orgaoEmissorCad.dart';
 
-class CursoPage extends StatefulWidget {
-  const CursoPage({super.key});
+class Orgaoemissor extends StatefulWidget {
+  const Orgaoemissor({super.key});
 
   @override
-  State<CursoPage> createState() => _CursoPageState();
+  State<Orgaoemissor> createState() => _Orgaoemissor();
 }
 
-class _CursoPageState extends State<CursoPage> {
-
+class _Orgaoemissor extends State<Orgaoemissor> {
   @override
   void initState() {
-     Provider.of<CursoProvider>(context, listen: false).listarCursos();
+    Provider.of<OrgaoEmissorProvider>(context, listen: false)
+        .listarOrgaoEmissors();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Criar Curso"),
+        title: const Text("Cadastro de orgão emissor"),
         centerTitle: true,
         backgroundColor: const Color(0xFF6ECBDE),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed('/CriaCursoPage');
+              Navigator.of(context).pushNamed('/OrgaoEmissorCad');
             },
             icon: const Icon(Icons.add),
-            tooltip: 'Adicionar novo colaborador', 
+            tooltip: 'Adicionar novo orgão emissor',
           ),
         ],
       ),
-      body: 
-      
-      Consumer<CursoProvider>(builder: (context, provider, _) {
+
+      body:   Consumer<OrgaoEmissorProvider>(builder: (context, provider, _) {
         return ListView.builder(
-          itemCount: provider.cursos.length,
+          itemCount: provider.orgaoEmissores.length,
           itemBuilder:  (context, index) {
-              final curso = provider.cursos[index];
+            final orgao = provider.orgaoEmissores[index];
             return ListTile(
-              title: Text(curso.nome),
-              subtitle: Text(curso.descricao),
-              
+              title: Text(orgao.nome),
                trailing:  Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -53,8 +51,8 @@ class _CursoPageState extends State<CursoPage> {
                         Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => CriaCursoPage(
-                                            curso: curso),
+                                        builder: (context) => OrgaoemissorCad(
+                                            orgao: orgao),
                                       ),
                                     );
 
@@ -67,7 +65,7 @@ class _CursoPageState extends State<CursoPage> {
                                       builder: (context) => AlertDialog(
                                         title: const Text('Confirmar Exclusão'),
                                         content: Text(
-                                            'Tem certeza de que deseja excluir a sala: ${curso.nome}?'),
+                                            'Tem certeza de que deseja excluir a sala: ${orgao.nome}?'),
                                         actions: [
                                           TextButton(
                                             onPressed: () =>
@@ -86,8 +84,8 @@ class _CursoPageState extends State<CursoPage> {
 
                                
                                     if (confirm == true) {
-                                      await  provider.deletarCurso(
-                                              curso.cursoId);
+                                      await  provider.deletarOrgaoEmissor(
+                                              orgao.orgaoEmissorId as int);
                                        // ignore: use_build_context_synchronously
                                      showMessage(message: provider.menssagem, context: context);
                             
@@ -98,13 +96,12 @@ class _CursoPageState extends State<CursoPage> {
 
                       }, icon: const Icon(Icons.delete)),
                     ],
-                  )            );
+                  )
+            );
           }, 
           );
       },)
-      
-      
+
     );
   }
-
 }
