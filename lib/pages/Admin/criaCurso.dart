@@ -44,20 +44,7 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
     );
   }
 
-  void _adicionarMatriculado() {
-    if (_isEditable) {
-      setState(() {
-        _matriculados.add({"nome": "", "matricula": ""});
-      });
-    }
-  }
-
-  void _removerMatriculado(int index) {
-    setState(() {
-      _matriculados.removeAt(index);
-    });
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,161 +59,79 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
         title: const Text("Criar Curso"),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              "NOME DO CURSO",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            TextField(
-              controller: _nomeController,
-              enabled: _isEditable,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Digite o nome do treinamento',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                "NOME DO CURSO",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            const Text(
-              "COLABORADORES",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-
-            // Contêiner com rolagem para os alunos matriculados
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(5),
+              const SizedBox(height: 5),
+              TextField(
+                controller: _nomeController,
+                enabled: _isEditable,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Digite o nome do treinamento',
+                ),
               ),
-              padding: const EdgeInsets.all(8),
-              constraints: const BoxConstraints(
-                maxHeight: 150, // Limite de altura para permitir scroll
+              const SizedBox(height: 20),
+  
+              const Text(
+                "DESCRIÇÃO",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Nome", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text("CPF", style: TextStyle(fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    const Divider(),
-                    ..._matriculados.asMap().entries.map((entry) {
-                      int index = entry.key;
-                      var aluno = entry.value;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                enabled: _isEditable,
-                                decoration: const InputDecoration(
-                                  hintText: "Nome",
-                                  border: InputBorder.none,
-                                ),
-                                onChanged: (value) {
-                                  _matriculados[index]["nome"] = value;
-                                },
-                                controller: TextEditingController(text: aluno["nome"]),
-                              ),
-                            ),
-                            Expanded(
-                              child: TextField(
-                                enabled: _isEditable,
-                                decoration: const InputDecoration(
-                                  hintText: "CPF",
-                                  border: InputBorder.none,
-                                ),
-                                onChanged: (value) {
-                                  _matriculados[index]["CPF"] = value;
-                                },
-                                controller: TextEditingController(text: aluno["matricula"]),
-                              ),
-                            ),
-                            if (_isEditable)
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle, color: Colors.red),
-                                onPressed: () => _removerMatriculado(index),
-                              ),
-                          ],
-                        ),
-                      );
-                    }),
-                    if (_isEditable)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: _adicionarMatriculado,
-                          child: const Text("Adicionar aluno"),
-                        ),
+              const SizedBox(height: 5),
+              TextField(
+                controller: _descricaoController,
+                enabled: _isEditable,
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Descrição',
+                ),
+              ),
+              const SizedBox(height: 20),
+        
+              ElevatedButton(
+                onPressed: _onFazerAlteracoes,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: const Text("FAZER ALTERAÇÕES"),
+              ),
+              const SizedBox(height: 20),
+        
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isEditable ? _onSalvar : null,
+                      style: ElevatedButton.styleFrom(
+        
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            const Text(
-              "DESCRIÇÃO",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            TextField(
-              controller: _descricaoController,
-              enabled: _isEditable,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Descrição',
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            ElevatedButton(
-              onPressed: _onFazerAlteracoes,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-              child: const Text("FAZER ALTERAÇÕES"),
-            ),
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isEditable ? _onSalvar : null,
-                    style: ElevatedButton.styleFrom(
-
-                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      child: const Text("SALVAR"),
                     ),
-                    child: const Text("SALVAR"),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isEditable ? _onExcluir : null,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isEditable ? _onExcluir : null,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: const Text("EXCLUIR"),
                     ),
-                    child: const Text("EXCLUIR"),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

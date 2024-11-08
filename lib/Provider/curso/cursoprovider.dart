@@ -66,7 +66,7 @@ Future<void> cadastrarCurso(Curso curso) async {
 
 //listar
   Future<void> listarCursos() async {
-      final url = '${AppUrl.baseUrl}api/Cursos';
+      final url = '${AppUrl.baseUrl}api/Curso';
     try {
       await pegarToken();
       final response = await http.get(Uri.parse(url),

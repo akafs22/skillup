@@ -10,6 +10,12 @@ class CursoPage extends StatefulWidget {
 }
 
 class _CursoPageState extends State<CursoPage> {
+
+  @override
+  void initState() {
+     Provider.of<CursoProvider>(context, listen: false).listarCursos();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,9 +40,9 @@ class _CursoPageState extends State<CursoPage> {
           itemCount: provider.cursos.length,
           itemBuilder:  (context, index) {
               final curso = provider.cursos[index];
-            return const ListTile(
-              title: curso.nome,
-              subtitle: curso.descricao,
+            return ListTile(
+              title: Text(curso.nome),
+              subtitle: Text(curso.descricao),
             );
           }, 
           );
@@ -46,7 +52,4 @@ class _CursoPageState extends State<CursoPage> {
     );
   }
 
-  void _onCriarCurso(BuildContext context) {
-    Navigator.pushNamed(context, '/CriaCursoPage');
-  }
 }
