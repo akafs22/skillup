@@ -28,10 +28,10 @@ Widget? meudrawer(BuildContext contexto, String nome, String email) {
               },
             ),
             ListTile(
-              title: const Text('Lista de treinamentos',
+              title: const Text('Lista de cursos',
                   style: TextStyle(color: Colors.white)),
               onTap: () {
-                Navigator.of(contexto).pushNamed("/Treinamento");
+                Navigator.of(contexto).pushNamed("/CursoPage");
               },
             ),
             const SizedBox(height: 450),

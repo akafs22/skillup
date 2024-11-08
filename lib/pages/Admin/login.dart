@@ -50,7 +50,7 @@ class _LoginState extends State<Login> {
                 child: TextField(
                   controller: _cpfcontroller,
                   decoration: InputDecoration(
-                    labelText: 'Insira matrícula ou CPF...',
+                    labelText: 'Insira o CPF...',
                     labelStyle: const TextStyle(color: Colors.white),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
@@ -99,37 +99,6 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   style: const TextStyle(color: Colors.white),
-                ),
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                'ou',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed("/Cadastro");
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xff1B4E79),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 60, vertical: 25),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: const Text(
-                  'CADASTRE-SE',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
                 ),
               ),
             ],

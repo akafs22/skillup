@@ -97,7 +97,7 @@ Future<void> cadastrarCurso(Curso curso) async {
   Future<void> atualizarCurso(Curso curso)async {
     try {
       final response = await http.put(
-        Uri.parse('${AppUrl.baseUrl}api/Cursos${curso.id}'),
+        Uri.parse('${AppUrl.baseUrl}api/Cursos${curso.cursoId}'),
          headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

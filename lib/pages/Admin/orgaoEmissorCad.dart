@@ -32,8 +32,6 @@ class _OrgaoemissorcadState extends State<OrgaoemissorCad> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('assets/images/logo.png'),
-                    const SizedBox(height: 30),
                     const Text(
                       'Cadastro de Órgão Emissor',
                       style: TextStyle(

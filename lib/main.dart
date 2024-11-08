@@ -8,14 +8,13 @@ import 'package:skillup/Provider/login/logar.dart';
 import 'package:skillup/Provider/usuario/create_user.dart';
 import 'package:skillup/Provider/usuario/verifica_usuario.dart';
 import 'package:skillup/pages/Admin/cadastro.dart';
-import 'package:skillup/pages/Admin/criaTreina.dart';
+import 'package:skillup/pages/Admin/criaCurso.dart';
 import 'package:skillup/pages/Admin/orgaoEmissorCad.dart';
-import 'package:skillup/pages/curso.dart';
 import 'package:skillup/pages/Admin/listaColab.dart';
 import 'package:skillup/pages/Admin/login.dart';
-import 'package:skillup/pages/Admin/mainAdmin.dart';
-import 'package:skillup/pages/Admin/perf_adm.dart';
-import 'package:skillup/pages/Admin/treinamentos.dart';
+import 'package:skillup/pages/mainAdmin.dart';
+import 'package:skillup/pages/Admin/perfilAdmin.dart';
+import 'package:skillup/pages/Admin/curso.dart';
 import 'package:provider/provider.dart';
 import 'package:skillup/pages/mainColaborador.dart';
 
@@ -36,12 +35,11 @@ void main() {
         initialRoute: "/",
         routes: {
           "/": (context) => const Login(),
-          "/EditAdm": (context) => const EditAdm(),
+          "/PerfilAdmin": (context) => PerfilAdmin(),
           "/Cadastro": (context) => const Cadastro(),
           "/MainAdmin": (context) => const MainAdmin(),
-          "/Curso": (context) => const Treinamento(),
-          "/Treinamento": (context) => const TreinamentoPage(),
-          "/CriaTreinamento": (context) => const CriaTreinamento(),
+          "/CursoPage": (context) => const CursoPage(),
+          "/CriaCursoPage": (context) => const CriaCursoPage(),
           "/ListaColab": (context) => ListaColab(),
           "/MainColaborador": (context) => const MainColaborador(),
           "/OrgaoEmissorCad": (context) => const OrgaoemissorCad()
