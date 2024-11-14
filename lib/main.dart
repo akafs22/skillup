@@ -41,7 +41,7 @@ void main() {
           "/MainAdmin": (context) => const MainAdmin(),
           "/CursoPage": (context) => const CursoPage(),
           "/CriaCursoPage": (context) => const CriaCursoPage(),
-          "/ListaColab": (context) => ListaColab(),
+          "/ListaColab": (context) => const ColaboradorPage(),
           "/MainColaborador": (context) => const MainColaborador(),
           "/OrgaoEmissorCad": (context) => const OrgaoemissorCad(),
           "/OrgaoEmissor": (context) => const Orgaoemissor(),

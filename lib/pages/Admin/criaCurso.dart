@@ -5,7 +5,6 @@ import 'package:skillup/Provider/curso/cursoprovider.dart';
 import 'package:skillup/Provider/curso/orgaoEmissorProvider.dart';
 import 'package:skillup/Utils/mensage.dart';
 
-
 class CriaCursoPage extends StatefulWidget {
   final Curso? curso;
   const CriaCursoPage({super.key, this.curso});
@@ -19,21 +18,18 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
   final TextEditingController _descricaoController = TextEditingController();
   int? _cursoSelecionado;
 
-
-
-@override
+  @override
   void initState() {
-     if (widget.curso != null){
+    super.initState();
+    if (widget.curso != null) {
       _nomeController.text = widget.curso!.nome;
       _descricaoController.text = widget.curso!.descricao;
+      _cursoSelecionado = widget.curso!.orgaoEmissorId;
     }
-
+    // Carrega os órgãos emissores
     Provider.of<OrgaoEmissorProvider>(context, listen: false).listarOrgaoEmissors();
-
-    super.initState();
   }
- 
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +63,6 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
                 ),
               ),
               const SizedBox(height: 20),
-  
               const Text(
                 "DESCRIÇÃO",
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -81,21 +76,17 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
                   hintText: 'Descrição',
                 ),
               ),
-
               const SizedBox(height: 20),
+              Consumer<OrgaoEmissorProvider>(
+                builder: (context, provider, child) {
+                  if (provider.orgaoEmissores.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-            Consumer<OrgaoEmissorProvider>(
-            builder: (context, provider, child) {
-              if (provider.orgaoEmissores.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              return
-
-               DropdownButton<int>(
+                  return DropdownButton<int>(
                     isExpanded: true,
                     value: _cursoSelecionado,
-                    hint: const Text("Selecione um Curso"),
+                    hint: const Text("Selecione um Órgão Emissor"),
                     items: provider.orgaoEmissores.map((orgao) {
                       return DropdownMenuItem<int>(
                         value: orgao.orgaoEmissorId,
@@ -108,48 +99,50 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
                       });
                     },
                   );
-            }),
-              const SizedBox(height: 20),
-
-              Consumer<CursoProvider>(builder:(context, provider, _) {
-
-                return ElevatedButton(
-                onPressed: ()  async {
-
-                        final cursocad = Curso(
-                                cursoId: widget.curso!.cursoId ?? 0,
-                                nome: _nomeController.text,
-                                descricao: _descricaoController.text,
-                                orgaoEmissorId: _cursoSelecionado as int,
-                              );
-
-                           
-
-                              if (widget.curso == null) {
-                                await provider.cadastrarCurso(cursocad);
-                              } else {
-                                await provider.atualizarCurso(cursocad);
-                              }
-
-                              showMessage(
-                                  message: provider.menssagem,
-                                  // ignore: use_build_context_synchronously
-                                  context: context);
-     
-
                 },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                ),
-                child: const Text("SALVAR"),
-              );
-                
-              },),
-        
-              
+              ),
               const SizedBox(height: 20),
-        
-              
+              Consumer<CursoProvider>(
+                builder: (context, provider, _) {
+                  return ElevatedButton(
+                    onPressed: () async {
+                      if (_nomeController.text.isEmpty || _descricaoController.text.isEmpty || _cursoSelecionado == null) {
+                        showMessage(
+                          message: 'Por favor, preencha todos os campos.',
+                          context: context,
+                        );
+                        return;
+                      }
+
+                      final cursocad = Curso(
+                        cursoId: widget.curso?.cursoId ?? 0,
+                        nome: _nomeController.text,
+                        descricao: _descricaoController.text,
+                        orgaoEmissorId: _cursoSelecionado!,
+                      );
+
+                      if (widget.curso == null) {
+                        await provider.cadastrarCurso(cursocad);
+                      } else {
+                        await provider.atualizarCurso(cursocad);
+                      }
+
+                      showMessage(
+                        message: provider.menssagem,
+                        context: context,
+                      );
+
+                      // Volta para a tela anterior após salvar
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    child: const Text("SALVAR"),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

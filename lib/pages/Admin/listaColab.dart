@@ -1,87 +1,117 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:skillup/Provider/admin/funcionario.dart';
+import 'package:skillup/Utils/mensage.dart';
+import 'package:skillup/pages/Admin/associar_curso_page.dart';
 
-class ListaColab extends StatefulWidget {
+class ColaboradorPage extends StatefulWidget {
+  const ColaboradorPage({super.key});
+
   @override
-  State<ListaColab> createState() => _ListaColabState();
+  State<ColaboradorPage> createState() => _ColaboradorPageState();
 }
 
-class _ListaColabState extends State<ListaColab> {
-  final List<Colaborador> colaboradores = [
-    Colaborador(
-      nome: "ANNA KLARA DE ALMEIDA F. SILVA",
-      cpf: "0198",
-      icone: Icons.pan_tool,
-      corIcone: Colors.black,
-    ),
-    Colaborador(
-      nome: "LETÍCIA MARTINS GALDINO",
-      cpf: "0011",
-      icone: Icons.access_alarm_rounded,
-      corIcone: Colors.blue,
-    ),
-    Colaborador(
-      nome: "JÚLIA RODRIGUES",
-      cpf: "0168",
-      icone: Icons.pets,
-      corIcone: Colors.purple,
-    ),
-  ];
+class _ColaboradorPageState extends State<ColaboradorPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<FuncionarioProvider>(context, listen: false)
+          .listarFuncionarios();  // Carrega os funcionários ao iniciar
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Colaboradores'),
+        title: const Text("Cadastrar Colaborador"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF6ECBDE),
         actions: [
           IconButton(
             onPressed: () {
               Navigator.of(context).pushNamed('/Cadastro');
             },
-            icon: Icon(Icons.add),
-            tooltip: 'Adicionar novo colaborador', 
+            icon: const Icon(Icons.add),
+            tooltip: 'Adicionar novo colaborador',
           ),
         ],
-        backgroundColor: Color.fromARGB(255, 110, 203, 224),
       ),
-      body: ListView.builder(
-        itemCount: colaboradores.length,
-        itemBuilder: (context, index) {
-          final colaborador = colaboradores[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: colaborador.corIcone,
-              child: Icon(
-                colaborador.icone,
-                color: Colors.white,
-              ),
-            ),
-            title: Text(
-              colaborador.nome,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${colaborador.cpf}'),
-              ],
-            ),
+      body: Consumer<FuncionarioProvider>(
+        builder: (context, provider, _) {
+          // Exibe indicador de carregamento enquanto lista é carregada
+          if (provider.carregando) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return ListView.builder(
+            itemCount: provider.funcionarios.length,
+            itemBuilder: (context, index) {
+              final funcionario = provider.funcionarios[index];
+              return ListTile(
+                onTap: () {
+                  // Navega para a tela de associar curso com o ID do funcionário
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AssociarCursoPage(funcionarioId: funcionario.id, funcionarioNome: funcionario.nome),
+                    ),
+                  );
+                },
+                title: Text(funcionario.nome),
+                subtitle: Text(funcionario.cpf),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        // Ação de edição pode ser implementada aqui
+                      },
+                      icon: const Icon(Icons.edit),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        bool? confirm = await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Confirmar Exclusão'),
+                            content: Text(
+                              'Tem certeza de que deseja excluir o colaborador: ${funcionario.nome}?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: const Text('Confirmar'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          await provider.deletarFuncionario(funcionario.id);
+                          showMessage(
+                            message: provider.menssagem,
+                            context: context,
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.delete),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
-}
-
-class Colaborador {
-  final String nome;
-  final String cpf;
-  final IconData icone;
-  final Color corIcone;
-
-  Colaborador({
-    required this.nome,
-    required this.cpf,
-    required this.icone,
-    required this.corIcone,
-  });
 }

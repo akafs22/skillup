@@ -4,11 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
+import 'package:skillup/Model/funcionario.dart';
+import 'package:skillup/Provider/admin/funcionario.dart';
 import 'package:skillup/Provider/usuario/create_user.dart';
 import 'package:skillup/Utils/mensage.dart';
 
 class Cadastro extends StatefulWidget {
-  const Cadastro({super.key});
+  final Funcionario? funcionario;
+  const Cadastro({super.key, this.funcionario});
 
   @override
   _CadastroState createState() => _CadastroState();
@@ -26,8 +29,17 @@ class _CadastroState extends State<Cadastro> {
   final TextEditingController _senhaController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _telefoneController = TextEditingController();
-
   String? _tipoController;
+
+  @override
+  void initState() {
+    if (widget.funcionario != null) {
+      _nomeController.text = widget.funcionario!.nome;
+      _cpfController.text = widget.funcionario!.cpf;
+    }
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,13 +134,13 @@ class _CadastroState extends State<Cadastro> {
                     : ElevatedButton(
                         onPressed: () async {
                           if (_tipoController != null) {
-                            await provider.createUser(
-                              _nomeController.text,
-                              _cpfController.text,
-                              _senhaController.text,
-                              _emailController.text,
-                              _telefoneController.text,
-                              _tipoController!,
+                            final createUser = Funcionario(
+                              id: widget.funcionario!.id ?? 0,
+                              nome: _nomeController.text,
+                              cpf: _cpfController.text,
+                              password: _senhaController.text,
+                              telefone: _telefoneController.text,
+                              tipo: _tipoController!,
                             );
                             if (provider.valido) {
                               showMessage(

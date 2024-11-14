@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skillup/Constrain/url.dart';
 import 'package:http/http.dart' as http;
 import 'package:skillup/Model/curso.dart';
+import 'package:skillup/Model/cursoassociado.dart';
 
 class CursoProvider with ChangeNotifier{
   
@@ -22,17 +24,19 @@ class CursoProvider with ChangeNotifier{
 
   String? token;
 
+  List<CursoAssociado> _cursosAssociados = [];
+  List<CursoAssociado> get cursosAssociados => _cursosAssociados;
+
+   
 //pegar token
   Future<void> pegarToken() async {
     var dados = await SharedPreferences.getInstance();
     token = dados.getString("token");
   }
 
-
 //cadastrar
 Future<void> cadastrarCurso(Curso curso) async {
      final url = '${AppUrl.baseUrl}api/Curso';
-    
     try {
       await pegarToken();
       final response = await http.post(
@@ -47,6 +51,7 @@ Future<void> cadastrarCurso(Curso curso) async {
       if (response.statusCode == 200 || response.statusCode == 201) {
          _cadastrado = true;
          _carregando = false;
+         await listarCursos();
          _menssagem = "Curso Cadastrado com sucesso!";
         notifyListeners();
       } else {
@@ -62,7 +67,6 @@ Future<void> cadastrarCurso(Curso curso) async {
          notifyListeners();
     }
   }
-
 
 //listar
   Future<void> listarCursos() async {
@@ -97,7 +101,7 @@ Future<void> cadastrarCurso(Curso curso) async {
   Future<void> atualizarCurso(Curso curso)async {
     try {
       final response = await http.put(
-        Uri.parse('${AppUrl.baseUrl}api/Cursos${curso.cursoId}'),
+        Uri.parse('${AppUrl.baseUrl}api/Curso/${curso.cursoId}'),
          headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -122,7 +126,7 @@ Future<void> cadastrarCurso(Curso curso) async {
 
   // Função para deletar 
   Future<void> deletarCurso(int id) async {
-    final url = Uri.parse('${AppUrl.baseUrl}api/Cursos/$id');
+    final url = Uri.parse('${AppUrl.baseUrl}api/Curso/$id');
 
     try {
       final response = await http.delete(url, headers: {
@@ -143,5 +147,74 @@ Future<void> cadastrarCurso(Curso curso) async {
       notifyListeners();
     }
   }
+
+  Future<void> associarFuncionarioCurso(String funcionarioId, int cursoId, DateTime dataValidade) async {
+  final url = '${AppUrl.baseUrl}api/FuncionarioCurso';
+
+  final dataFormatada = DateFormat('yyyy-MM-dd').format(dataValidade);
+
+  final data = {
+    "funcCursoId": 0,
+    "funcionarioId": funcionarioId,
+    "cursoId": cursoId,
+    "dataValidade": dataFormatada,
+  };
+
+  try {
+    await pegarToken();
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode(data),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      _menssagem = "Curso associado com sucesso!";
+      listarCursosFuncionario(funcionarioId);
+      notifyListeners();
+    } else {
+      _menssagem = "Erro ao associar curso.";
+      notifyListeners();
+    }
+  } catch (error) {
+    _menssagem = "Erro ao conectar ao servidor: $error";
+    notifyListeners();
+  }
+  notifyListeners();
+}
+
+
+Future<void> listarCursosFuncionario(String funcionarioId) async {
+  final url = '${AppUrl.baseUrl}api/FuncionarioCurso/Funcionario/$funcionarioId';
+
+  try {
+    await pegarToken();
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      _cursosAssociados = data.map((json) => CursoAssociado.fromJson(json)).toList();
+      _carregando = false;
+      notifyListeners();
+    } else {
+      _carregando = false;
+      notifyListeners();
+    }
+  } catch (error) {
+    _carregando = false;
+    _menssagem = "Erro ao carregar cursos associados.";
+    notifyListeners();
+  }
+}
+
 
 }

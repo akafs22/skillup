@@ -22,86 +22,81 @@ class _Orgaoemissor extends State<Orgaoemissor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Cadastro de orgão emissor"),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF6ECBDE),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('/OrgaoEmissorCad');
-            },
-            icon: const Icon(Icons.add),
-            tooltip: 'Adicionar novo orgão emissor',
-          ),
-        ],
-      ),
+        appBar: AppBar(
+          title: const Text("Cadastro de orgão emissor"),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF6ECBDE),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/OrgaoEmissorCad');
+              },
+              icon: const Icon(Icons.add),
+              tooltip: 'Adicionar novo orgão emissor',
+            ),
+          ],
+        ),
+        body: Consumer<OrgaoEmissorProvider>(
+          builder: (context, provider, _) {
+            return ListView.builder(
+              itemCount: provider.orgaoEmissores.length,
+              itemBuilder: (context, index) {
+                final orgao = provider.orgaoEmissores[index];
+                return ListTile(
+                    title: Text(orgao.nome),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      OrgaoemissorCad(orgao: orgao),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.edit)),
+                        IconButton(
+                            onPressed: () async {
+                              // Exibe a confirmação antes de excluir
+                              bool? confirm = await showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Confirmar Exclusão'),
+                                  content: Text(
+                                      'Tem certeza de que deseja excluir a sala: ${orgao.nome}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(false),
+                                      child: const Text('Cancelar'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: const Text('Confirmar'),
+                                    ),
+                                  ],
+                                ),
+                              );
 
-      body:   Consumer<OrgaoEmissorProvider>(builder: (context, provider, _) {
-        return ListView.builder(
-          itemCount: provider.orgaoEmissores.length,
-          itemBuilder:  (context, index) {
-            final orgao = provider.orgaoEmissores[index];
-            return ListTile(
-              title: Text(orgao.nome),
-               trailing:  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(onPressed: (){
-                        Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => OrgaoemissorCad(
-                                            orgao: orgao),
-                                      ),
-                                    );
-
-                      }, icon: const Icon(Icons.edit)),
-                      IconButton(onPressed: () async{
-
-                           // Exibe a confirmação antes de excluir
-                                    bool? confirm = await showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('Confirmar Exclusão'),
-                                        content: Text(
-                                            'Tem certeza de que deseja excluir a sala: ${orgao.nome}?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context)
-                                                    .pop(false),
-                                            child: const Text('Cancelar'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(true),
-                                            child: const Text('Confirmar'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-
-                               
-                                    if (confirm == true) {
-                                      await  provider.deletarOrgaoEmissor(
-                                              orgao.orgaoEmissorId as int);
-                                       // ignore: use_build_context_synchronously
-                                     showMessage(message: provider.menssagem, context: context);
-                            
-                                    }
-
-                                    
-              
-
-                      }, icon: const Icon(Icons.delete)),
-                    ],
-                  )
+                              if (confirm == true) {
+                                await provider.deletarOrgaoEmissor(
+                                    orgao.orgaoEmissorId as int);
+                                // ignore: use_build_context_synchronously
+                                showMessage(
+                                    message: provider.menssagem,
+                                    context: context);
+                              }
+                            },
+                            icon: const Icon(Icons.delete)),
+                      ],
+                    ));
+              },
             );
-          }, 
-          );
-      },)
-
-    );
+          },
+        ));
   }
 }

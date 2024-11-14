@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skillup/Constrain/url.dart';
 import 'package:http/http.dart' as http;
 import 'package:skillup/Model/funcionario.dart';
+import 'package:skillup/Model/funcionariolistmodel.dart';
+
 
 class FuncionarioProvider with ChangeNotifier{
   
@@ -16,9 +18,9 @@ class FuncionarioProvider with ChangeNotifier{
   String _menssagem = "";
   String get menssagem => _menssagem;
 
-  List<Funcionario> _funcionarios = [];
+  List<FuncionarioList> _funcionarios = [];
 
-  List<Funcionario> get funcionarios => _funcionarios;
+  List<FuncionarioList> get funcionarios => _funcionarios;
 
   String? token;
 
@@ -63,32 +65,35 @@ Future<void> cadastrarFuncionario(Funcionario funcionario) async {
     }
   }
 
-
-//listar
+//Listar funcionários
   Future<void> listarFuncionarios() async {
-      final url = '${AppUrl.baseUrl}api/Usuario';
+    final url = '${AppUrl.baseUrl}api/Usuario';
+    _carregando = true;
+    notifyListeners();
+
     try {
       await pegarToken();
-      final response = await http.get(Uri.parse(url),
-       headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },);
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
       if (response.statusCode == 200) {
+ 
         final List<dynamic> data = json.decode(response.body);
-        _funcionarios = data.map((json) => Funcionario.fromJson(json)).toList();
-        _carregando = false;
-        notifyListeners();
+        _funcionarios = data.map((json) => FuncionarioList.fromJson(json)).toList();
+        _menssagem = "Funcionários carregados com sucesso!";
+     
+           _carregando = false;
+      notifyListeners();
       } else {
-        _carregando = false;
-         notifyListeners();
+        _menssagem = "Erro ao carregar funcionários!";
       }
     } catch (error) {
-        _cadastrado = false;
-         _carregando = false;
-         _menssagem = "Erro ao carregar dos do servidor";
-         notifyListeners();
+      _menssagem = "Erro ao carregar dados do servidor: $error";
     }
   }
 
@@ -121,7 +126,7 @@ Future<void> cadastrarFuncionario(Funcionario funcionario) async {
   }
 
   // Função para deletar 
-  Future<void> deletarFuncionario(int id) async {
+  Future<void> deletarFuncionario(String id) async {
     final url = Uri.parse('${AppUrl.baseUrl}api/Funcionarios/$id');
 
     try {
