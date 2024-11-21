@@ -18,8 +18,9 @@ import 'package:skillup/pages/Admin/perfilAdmin.dart';
 import 'package:skillup/pages/mainAdmin.dart';
 import 'package:provider/provider.dart';
 import 'package:skillup/pages/mainColaborador.dart';
+import 'package:skillup/pages/offline/tela_funcionarios.dart';
 
-void main() {
+void main() async {
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ValidarSenha()),
@@ -45,6 +46,7 @@ void main() {
           "/MainColaborador": (context) => const MainColaborador(),
           "/OrgaoEmissorCad": (context) => const OrgaoemissorCad(),
           "/OrgaoEmissor": (context) => const Orgaoemissor(),
+          "/funcoffline": (context) => const TelaFuncionarios(),
         },
       )));
 }

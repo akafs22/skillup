@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:skillup/Services/salvaroffline.dart';
+import 'package:skillup/pages/offline/tela_funcionarios.dart';
 
 Widget? meudrawer(BuildContext contexto, String nome, String email) {
+    final UsuarioService usuarioService = UsuarioService();
     return Drawer(
         backgroundColor: const Color.fromRGBO(50, 64, 82, 1),
         child: ListView(
@@ -16,7 +19,7 @@ Widget? meudrawer(BuildContext contexto, String nome, String email) {
               ),
               accountName: Text( nome ?? "Não carregado", style: const TextStyle(color: Colors.white)),
               accountEmail:
-                  Text(email ?? "Não carregado", style: TextStyle(color: Colors.white70)),
+                  Text(email ?? "Não carregado", style: const TextStyle(color: Colors.white70)),
             ),
             ListTile(
               title: const Text('Lista de colaboradores',
@@ -39,7 +42,27 @@ Widget? meudrawer(BuildContext contexto, String nome, String email) {
                 Navigator.of(contexto).pushNamed("/OrgaoEmissor");
               },
             ),
-            const SizedBox(height: 450),
+            ElevatedButton(
+          onPressed: () async {
+            try {
+              await usuarioService.salvarUsuariosComCursos();
+              ScaffoldMessenger.of(contexto).showSnackBar(
+                const SnackBar(content: Text('Dados carregados e salvos com sucesso!')),
+              );
+              Navigator.push(
+                contexto,
+                MaterialPageRoute(builder: (context) => const TelaFuncionarios()),
+              );
+            } catch (e) {
+              print(e);
+              ScaffoldMessenger.of(contexto).showSnackBar(
+                SnackBar(content: Text('Erro ao carregar os dados: $e')),
+              );
+            }
+          },
+          child: const Text('Carregar Dados'),
+        ),
+            const SizedBox(height: 20),
             ListTile(
               title: const Text('Sair',
                   style: TextStyle(color: Color.fromARGB(255, 224, 66, 66))),
@@ -68,7 +91,7 @@ Widget? colabdrawer(BuildContext contexto, String nome, String email) {
               ),
               accountName: Text( nome ?? "Não carregado", style: const TextStyle(color: Colors.white)),
               accountEmail:
-                  Text(email ?? "Não carregado", style: TextStyle(color: Colors.white70)),
+                  Text(email ?? "Não carregado", style: const TextStyle(color: Colors.white70)),
             ),
           ]
         ),
