@@ -11,9 +11,6 @@ class _PerfilAdminState extends State<PerfilAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF73C2EC),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -52,7 +49,8 @@ class _PerfilAdminState extends State<PerfilAdmin> {
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.blue, // Cor de fundo
+                    foregroundColor: Colors.white, // Cor do texto
                     padding: const EdgeInsets.symmetric(
                         horizontal: 40, vertical: 15),
                   ),
@@ -61,7 +59,8 @@ class _PerfilAdminState extends State<PerfilAdmin> {
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.red, // Cor de fundo
+                    foregroundColor: Colors.white, // Cor do texto
                     padding: const EdgeInsets.symmetric(
                         horizontal: 40, vertical: 15),
                   ),

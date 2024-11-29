@@ -90,17 +90,29 @@ class _LoginState extends State<Login> {
                         Icons.arrow_circle_right_outlined,
                         color: Colors.blueAccent,
                       ),
-                      onPressed: () async{
-                         await provider.logarUsuario(_cpfcontroller.text, _senhacontroller.text);
-                        if (provider.logado == true) {
+                      onPressed: () async {
+                        await provider.logarUsuario(
+                            _cpfcontroller.text, _senhacontroller.text);
+                        if (provider.logado) {
                           Navigator.of(context).pushNamed(provider.rota);
-                      }
+                        } else {
+                          setState(() {});
+                        }
                       },
                     ),
                   ),
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
+              const SizedBox(height: 20),
+              if (provider.msgError.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                  child: Text(
+                    provider.msgError,
+                    style: const TextStyle(color: Colors.red, fontSize: 14),
+                  ),
+                ),
             ],
           ),
         );

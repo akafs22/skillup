@@ -17,7 +17,7 @@ class _ColaboradorPageState extends State<ColaboradorPage> {
     super.initState();
     Future.microtask(() {
       Provider.of<FuncionarioProvider>(context, listen: false)
-          .listarFuncionarios();  // Carrega os funcionários ao iniciar
+          .listarFuncionarios();
     });
   }
 
@@ -25,9 +25,16 @@ class _ColaboradorPageState extends State<ColaboradorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cadastrar Colaborador"),
+        title: const Text(
+          "Colaboradores",
+          style: TextStyle(
+            color: Colors.white, // Cor do título da AppBar
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF6ECBDE),
+        backgroundColor: Colors.cyan,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actionsIconTheme: const IconThemeData(color: Colors.white), 
         actions: [
           IconButton(
             onPressed: () {
@@ -40,7 +47,6 @@ class _ColaboradorPageState extends State<ColaboradorPage> {
       ),
       body: Consumer<FuncionarioProvider>(
         builder: (context, provider, _) {
-          // Exibe indicador de carregamento enquanto lista é carregada
           if (provider.carregando) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -67,7 +73,7 @@ class _ColaboradorPageState extends State<ColaboradorPage> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        // Ação de edição pode ser implementada aqui
+                        
                       },
                       icon: const Icon(Icons.edit),
                     ),
@@ -87,6 +93,7 @@ class _ColaboradorPageState extends State<ColaboradorPage> {
                                 child: const Text('Cancelar'),
                               ),
                               TextButton(
+
                                 onPressed: () =>
                                     Navigator.of(context).pop(true),
                                 child: const Text('Confirmar'),
@@ -109,7 +116,7 @@ class _ColaboradorPageState extends State<ColaboradorPage> {
                 ),
               );
             },
-          );
+          ); 
         },
       ),
     );

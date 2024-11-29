@@ -44,9 +44,6 @@ class _TelaFuncionariosState extends State<TelaFuncionarios> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Funcionários e Cursos'),
-      ),
       body: funcionariosComCursos.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(

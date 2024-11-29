@@ -41,7 +41,10 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
             Navigator.of(context).pop();
           },
         ),
-        title: const Text("Criar Curso"),
+        title: const Text(
+          "Criar Curso",
+          style: TextStyle(color: Colors.white),  // Título em branco
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -58,7 +61,9 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
               TextField(
                 controller: _nomeController,
                 decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan), // Bordas cyan
+                  ),
                   hintText: 'Digite o nome do treinamento',
                 ),
               ),
@@ -72,7 +77,9 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
                 controller: _descricaoController,
                 maxLines: 5,
                 decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.cyan), // Bordas cyan
+                  ),
                   hintText: 'Descrição',
                 ),
               ),
@@ -136,9 +143,10 @@ class _CriaCursoPageState extends State<CriaCursoPage> {
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, backgroundColor: Colors.cyan, // Cor do texto do botão
                       padding: const EdgeInsets.symmetric(vertical: 15),
                     ),
-                    child: const Text("SALVAR"),
+                    child: const Text("SALVAR"),  // Texto do botão em branco
                   );
                 },
               ),

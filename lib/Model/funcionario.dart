@@ -3,10 +3,11 @@ class Funcionario {
   final String nome;
   final String cpf;
   final String password;
+  final String email;
   final String telefone;
   final String tipo;
 
-Funcionario({required this.id, required this.nome, required this.cpf, required this.password, required this.telefone, required this.tipo});
+Funcionario({required this.id, required this.nome, required this.cpf, required this.password, required this.email, required this.telefone, required this.tipo});
 
 Map<String, dynamic> toJson() {
     return {
@@ -14,6 +15,7 @@ Map<String, dynamic> toJson() {
       'nome': nome,
       'cpf': cpf,
       'password': password,
+      'email': email,
       'telefone': telefone,
       'tipo' : tipo,
     };
@@ -25,6 +27,7 @@ Map<String, dynamic> toJson() {
       nome: json['nome'],
       cpf: json['cpf'],
       password: json['password'],
+      email: json['email'],
       telefone: json['telefone'],
       tipo: json['tipo']
     );

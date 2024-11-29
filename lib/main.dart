@@ -4,6 +4,7 @@ import 'package:skillup/Provider/admin/funccurso.dart';
 import 'package:skillup/Provider/admin/funcionario.dart';
 import 'package:skillup/Provider/curso/cursoprovider.dart';
 import 'package:skillup/Provider/curso/orgaoEmissorProvider.dart';
+import 'package:skillup/Provider/funcionario/providertelafunc.dart';
 import 'package:skillup/Provider/login/logar.dart';
 import 'package:skillup/Provider/usuario/create_user.dart';
 import 'package:skillup/Provider/usuario/verifica_usuario.dart';
@@ -31,9 +32,11 @@ void main() async {
         ChangeNotifierProvider(create: (_) => CursoProvider()),
         ChangeNotifierProvider(create: (_) => FuncionarioProvider()),
         ChangeNotifierProvider(create: (_) => OrgaoEmissorProvider()),
+        ChangeNotifierProvider(create: (_) => FuncionarioCursoProviderTela()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        
         initialRoute: "/",
         routes: {
           "/": (context) => const Login(),
@@ -49,4 +52,4 @@ void main() async {
           "/funcoffline": (context) => const TelaFuncionarios(),
         },
       )));
-}
+} 

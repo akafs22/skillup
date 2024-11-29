@@ -27,7 +27,7 @@ class _OrgaoemissorcadState extends State<OrgaoemissorCad> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Cadastro de Órgão Emissor'),
+          title: const Text(''),
           backgroundColor: Colors.cyan[600],
         ),
         body: Container(

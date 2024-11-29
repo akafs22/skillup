@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:skillup/Provider/funcionario/providertelafunc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skillup/Provider/login/logar.dart';
 import 'package:skillup/Utils/drawer.dart';
@@ -16,24 +17,47 @@ class _MainColaboradorState extends State<MainColaborador>
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _cursos = ['Julia', 'Leticia', 'Ana', 'Júlia'];
-  List<String> _filteredCursos = [];
+  List<Map<String, String>> _filteredCursos = [];
+  late String funcionarioId;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _filteredCursos = List.from(_cursos);
-
+    _loadFuncionarioId();
     _searchController.addListener(() {
       setState(() {
-        _filteredCursos = _cursos
-            .where((curso) => curso
-                .toLowerCase()
-                .contains(_searchController.text.toLowerCase()))
-            .toList();
+        _filterCursos();
       });
     });
+  }
+
+  Future<void> _loadFuncionarioId() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      funcionarioId = prefs.getString("id") ?? "0";
+    });
+
+    // Carrega os cursos do funcionário assim que o ID é carregado
+    if (funcionarioId.isNotEmpty) {
+      await Provider.of<FuncionarioCursoProviderTela>(context, listen: false)
+          .fetchCursos(funcionarioId);
+      _filterCursos();
+    }
+  }
+
+  void _filterCursos() {
+    final provider =
+        Provider.of<FuncionarioCursoProviderTela>(context, listen: false);
+    final cursos = provider.cursos;
+
+    _filteredCursos = cursos
+        .where((curso) => curso.nomeCurso
+            .toLowerCase()
+            .contains(_searchController.text.toLowerCase()))
+        .map((curso) =>
+            {"idCurso": curso.idCurso.toString(), "nomeCurso": curso.nomeCurso})
+        .toList();
   }
 
   @override
@@ -47,13 +71,20 @@ class _MainColaboradorState extends State<MainColaborador>
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final bool isLargeScreen = width > 800;
+    final provider = Provider.of<FuncionarioCursoProviderTela>(context);
 
-    return Consumer<Logar>(builder: (context, provider, child) {
+    // Acessa os dados do usuário pelo Provider
+    final logarProvider = Provider.of<Logar>(context);
+    final String nomeUsuario =
+        logarProvider.dadosUser["nome"] ?? "Usuário não identificado";
+    final String emailUsuario =
+        logarProvider.dadosUser["email"] ?? "Email não disponível";
 
-      return Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
       body: Column(
         children: [
+          // Header com barra de busca
           Container(
             color: const Color.fromARGB(255, 110, 203, 224),
             padding: const EdgeInsets.all(20.0),
@@ -82,7 +113,7 @@ class _MainColaboradorState extends State<MainColaborador>
                         prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none
+                          borderSide: BorderSide.none,
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 20),
@@ -94,71 +125,103 @@ class _MainColaboradorState extends State<MainColaborador>
               ],
             ),
           ),
-          Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
-            ),
-          ),
+          // Conteúdo principal com abas
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                _buildColaboradorList(),
+                _buildColaboradorList(provider),
                 const Center(child: Text('Lista de Cursos')),
               ],
             ),
           ),
         ],
       ),
-      drawer: colabdrawer(context, provider.dadosUer["nome"], provider.dadosUer["email"]),
-    );
-      
-    },  
+      drawer: colabdrawer(context, nomeUsuario, emailUsuario), // Dados dinâmicos
     );
   }
 
   Widget _buildUserAccountInfo() {
-    return Consumer<Logar>(
-      builder: (context, provider, _) {
-        return Row(
-      children: [
-        const CircleAvatar(
-          backgroundColor: Colors.white,
-          child: Icon(Icons.person, color: Color.fromRGBO(50, 64, 82, 1)),
-        ),
-        const SizedBox(width: 10),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-             provider.dadosUer["nome"] ?? "nome não carregado!",
-              style:
-                  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return Consumer<Logar>(builder: (context, provider, _) {
+      return Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: 20,
+            child: Text(
+              provider.dadosUser["nome"] != null
+                  ? provider.dadosUser["nome"].substring(0, 1).toUpperCase()
+                  : "U",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromRGBO(50, 64, 82, 1),
+              ),
             ),
-            Text(
-               provider.dadosUer["email"] ?? "nome não carregado!",
-              style: TextStyle(color: Colors.white70),
-            ),
-          ],
-        ),
-      ],
-    );
-      },
-    );
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                provider.dadosUser["nome"] ?? "Usuário não identificado",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                provider.dadosUser["email"] ?? "Email não disponível",
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    });
   }
 
-  Widget _buildColaboradorList() {
+  Widget _buildColaboradorList(FuncionarioCursoProviderTela provider) {
+    final cursos = _filteredCursos;
+
+    if (cursos.isEmpty) {
+      return const Center(child: Text("Nenhum curso encontrado."));
+    }
+
     return ListView.builder(
-      itemCount: _filteredCursos.length,
+      itemCount: cursos.length,
       itemBuilder: (context, index) {
+        final curso = cursos[index];
+        final nomeCurso = curso["nomeCurso"];
+        int idCurso = int.parse(curso["idCurso"].toString());
+
         return ListTile(
-          title: Text(_filteredCursos[index]),
+          title: Text(nomeCurso ?? 'Curso não disponível'),
+          onTap: () async {
+            // Buscar validade do curso ao clicar
+            await provider.fetchValidadeCurso( idCurso );
+
+            // Mostrar a validade em um dialog
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Validade do Curso"),
+                content: Text(provider.validadeCurso?.dataValidade ??
+                    "Validade não encontrada"),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Fechar"),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
   }
-
 }

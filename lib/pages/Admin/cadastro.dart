@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:skillup/Model/funcionario.dart';
-import 'package:skillup/Provider/admin/funcionario.dart';
-import 'package:skillup/Provider/usuario/create_user.dart';
 import 'package:skillup/Utils/mensage.dart';
+
+import '../../Provider/admin/funcionario.dart';
 
 class Cadastro extends StatefulWidget {
   final Funcionario? funcionario;
@@ -40,34 +38,22 @@ class _CadastroState extends State<Cadastro> {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xff002657),
+        backgroundColor: Colors.cyan,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Volta para a tela anterior
+            Navigator.pop(context);
           },
         ),
       ),
-      body: SingleChildScrollView(child: Consumer<ValidarSenha>(
+      body: SingleChildScrollView(child: Consumer<FuncionarioProvider>(
         builder: (context, provider, _) {
           return Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topRight,
-                colors: [
-                  Color(0xff002657),
-                  Color(0xff002657),
-                  Color(0xff1B4E79),
-                  Color(0xff6ecbe0),
-                ],
-              ),
-            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -75,7 +61,7 @@ class _CadastroState extends State<Cadastro> {
                 const Text(
                   'CADASTRE-SE',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.cyan,
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
@@ -108,14 +94,14 @@ class _CadastroState extends State<Cadastro> {
                         .toList(),
                     decoration: InputDecoration(
                       labelText: 'Tipo de Usuário',
-                      labelStyle: const TextStyle(color: Colors.white),
+                      labelStyle: const TextStyle(color: Colors.cyan),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderSide: const BorderSide(color: Colors.cyan),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(color: Colors.white),
+                        borderSide: const BorderSide(color: Colors.cyan),
                       ),
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.3),
@@ -132,24 +118,26 @@ class _CadastroState extends State<Cadastro> {
                 provider.carregando
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
-                        onPressed: () async {
+                        onPressed: ()async {
                           if (_tipoController != null) {
-                            final createUser = Funcionario(
-                              id: widget.funcionario!.id ?? 0,
+                            await provider.cadastrarFuncionario(Funcionario(
+                              id: 0,
                               nome: _nomeController.text,
                               cpf: _cpfController.text,
                               password: _senhaController.text,
+                              email: _emailController.text,
                               telefone: _telefoneController.text,
                               tipo: _tipoController!,
-                            );
-                            if (provider.valido) {
+                            ));
+
+                            if (provider.cadastrado) {
                               showMessage(
-                                  message: provider.msgErrorApi,
+                                  message: provider.menssagem,
                                   context: context);
                               Navigator.of(context).pushNamed('/ListaColab');
                             } else {
                               showMessage(
-                                  message: provider.msgErrorApi,
+                                  message: provider.menssagem,
                                   context: context);
                             }
                           } else {
@@ -161,7 +149,7 @@ class _CadastroState extends State<Cadastro> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff1B4E79),
+                          backgroundColor: Colors.cyan,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 60, vertical: 25),
                           shape: RoundedRectangleBorder(
@@ -195,19 +183,19 @@ class _CadastroState extends State<Cadastro> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.white),
+          labelStyle: const TextStyle(color: Colors.cyan),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Colors.cyan),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.white),
+            borderSide: const BorderSide(color: Colors.cyan),
           ),
           filled: true,
           fillColor: Colors.white.withOpacity(0.3),
         ),
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.black), // Alterado para preto
         keyboardType: keyboardType,
         obscureText: obscureText,
         inputFormatters: inputFormatters,
